@@ -25,12 +25,13 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import QtQuick 2.5
+import QtQuick // EE++
+// import QtQuick 2.5 // EE--
+
 import QtTest 1.1
 
 Showcase {
     id: root
-
 
     TestCase {
         id: testCase
@@ -69,4 +70,3 @@ Showcase {
         }
     }
 }
-

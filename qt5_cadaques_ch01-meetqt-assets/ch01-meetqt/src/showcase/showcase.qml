@@ -27,11 +27,14 @@
 
 // showcase.qml
 
-import QtQuick 2.5
-import QtGraphicalEffects 1.0
+//import QtQuick 2.5 // EE--
+import QtQuick // EE++
+
+// import QtGraphicalEffects 1.0 // EE--
+import Qt5Compat.GraphicalEffects // EE++
 
 Image {
-    id: root
+    id: rootImg
     source: "images/background.png"
 
     property int blurRadius: 0
@@ -43,22 +46,22 @@ Image {
         source: "images/pole.png"
     }
 
-
     Image {
-        id: wheel
+        id: wheelImg
         anchors.centerIn: parent
+        // anchors.horizontalCenterOffset: 10 // EE++ EE--
         source: "images/pinwheel.png"
         Behavior on rotation {
             NumberAnimation {
-                duration: 250
+                duration: 1000 // [ms]
             }
         }
         layer.effect: FastBlur {
             id: blur
-            radius: root.blurRadius
+            radius: rootImg.blurRadius
             Behavior on radius {
                 NumberAnimation {
-                    duration: 250
+                    duration: 250 // [ms]
                 }
             }
         }
@@ -66,13 +69,48 @@ Image {
     }
 
     MouseArea {
-        anchors.fill: parent
-        onPressed: {
-            wheel.rotation += 90
-            root.blurRadius = 16
+        /* The mouse area emits "signals"
+            when the user clicks inside the area
+            it covers.
+           You can connect to this signal
+            by overwriting the "onClicked" / "onPressed"
+            handler/function.
+        */
+        // anchors.fill: parent // EE--
+        anchors.fill: wheelImg // EE++
+
+        // EE++
+        // onClicked: { // handler / function
+        //     wheelImg.rotation += 90
+        //     rootImg.blurRadius = 16
+        // }
+
+        onPressed: { // overwrite handler / function
+            wheelImg.rotation -= 90
+            rootImg.blurRadius = 16
         }
-        onReleased: {
-            root.blurRadius = 0
+
+        onReleased: { // overwrite handler / function
+            // wheelImg stays where it is // EE++
+            rootImg.blurRadius = 0
         }
     }
 }
+/*
+Note
+
+This technique works for every signal,
+with the naming convention being on + SignalName capitalised.
+
+Also, all properties emit a signal
+when their value changes.
+For these signals, the naming convention is:
+
+    on + PropertyName + Changed
+
+For example, if a width property is changed,
+you can observe it with
+
+    onWidthChanged: print(width)
+
+*/
