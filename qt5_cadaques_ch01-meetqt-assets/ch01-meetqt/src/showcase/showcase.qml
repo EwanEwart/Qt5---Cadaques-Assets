@@ -1,3 +1,4 @@
+
 /*
  * Copyright (c) 2013, Juergen Bocklage-Ryannel, Johan Thelin
  * All rights reserved.
@@ -28,15 +29,19 @@
 // showcase.qml
 
 //import QtQuick 2.5 // EE--
-import QtQuick // EE++
+import QtQuick
+// EE++
 
+//////////
+// FastBlur
 // import QtGraphicalEffects 1.0 // EE--
-import Qt5Compat.GraphicalEffects // EE++
+import Qt5Compat.GraphicalEffects
 
+// EE++
 Image {
     id: rootImg
     source: "images/background.png"
-
+    // width, height, ... derived from Image rootImg
     property int blurRadius: 0
 
     Image {
@@ -48,14 +53,16 @@ Image {
 
     Image {
         id: wheelImg
+        source: "images/pinwheel.png"
         anchors.centerIn: parent
         // anchors.horizontalCenterOffset: 10 // EE++ EE--
-        source: "images/pinwheel.png"
         Behavior on rotation {
             NumberAnimation {
+                easing.type: Easing.OutInQuad
                 duration: 1000 // [ms]
             }
         }
+        layer.enabled: true
         layer.effect: FastBlur {
             id: blur
             radius: rootImg.blurRadius
@@ -65,10 +72,12 @@ Image {
                 }
             }
         }
-        layer.enabled: true
     }
 
     MouseArea {
+        acceptedButtons: Qt.LeftButton | Qt.RightButton // EE++
+
+
         /* The mouse area emits "signals"
             when the user clicks inside the area
             it covers.
@@ -76,21 +85,33 @@ Image {
             by overwriting the "onClicked" / "onPressed"
             handler/function.
         */
+
         // anchors.fill: parent // EE--
         anchors.fill: wheelImg // EE++
-
         // EE++
         // onClicked: { // handler / function
         //     wheelImg.rotation += 90
         //     rootImg.blurRadius = 16
         // }
 
-        onPressed: { // overwrite handler / function
-            wheelImg.rotation -= 90
-            rootImg.blurRadius = 16
+        // overwrite handler / function
+        onPressed: {
+
+            if (pressedButtons & Qt.LeftButton)
+                // EE++
+                // mathematical direction of rotation == anti clock wise
+                wheelImg.rotation -= 90
+            else if (pressedButtons & Qt.RightButton)
+                // EE++
+                // anti mathematical direction of rotation == clock wise
+                wheelImg.rotation += 90
+            else
+                // nothing to do
+                rootImg.blurRadius = 16
         }
 
-        onReleased: { // overwrite handler / function
+        // overwrite handler / function
+        onReleased: {
             // wheelImg stays where it is // EE++
             rootImg.blurRadius = 0
         }
@@ -114,3 +135,4 @@ you can observe it with
     onWidthChanged: print(width)
 
 */
+
